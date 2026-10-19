@@ -47,7 +47,19 @@ docker compose logs -f
 # Qdrant 面板:  http://localhost:6333/dashboard
 ```
 
-## 四、本地开发
+## 四、部署到云服务器
+
+一台 2C4G 的 Ubuntu 服务器即可。脚本会安装 Docker、生成随机密码、拉起六个服务并轮询健康检查：
+
+```bash
+git clone https://github.com/rsrpdx/rag-assistant.git /opt/rag-assistant
+cd /opt/rag-assistant
+sudo LLM_API_KEY=sk-你的key bash scripts/deploy.sh
+```
+
+完整步骤（安全组、域名与 HTTPS、备份、排障）见 [docs/deploy.md](docs/deploy.md)。
+
+## 五、本地开发
 
 ```bash
 # 后端（默认连本机 MySQL/Redis/MinIO/Qdrant，端口见 application.yml）
@@ -57,7 +69,7 @@ cd backend && mvn spring-boot:run
 cd frontend && npm install && npm run dev
 ```
 
-## 五、服务架构
+## 六、服务架构
 
 ```
 ┌──────────────────────────────────────────────────────┐
@@ -74,7 +86,7 @@ cd frontend && npm install && npm run dev
 └──────────────────────────────────────────────────────┘
 ```
 
-## 六、数据持久化
+## 七、数据持久化
 
 所有数据存放在 Docker volumes 中，删除容器不会丢数据：
 
@@ -85,7 +97,7 @@ cd frontend && npm install && npm run dev
 | MinIO | minio-data | /data |
 | Qdrant | qdrant-data | /qdrant/storage |
 
-## 七、LLM 配置
+## 八、LLM 配置
 
 ```bash
 LLM_BASE_URL=https://api.deepseek.com/v1   # 或 http://192.168.1.100:8000/v1（vLLM/Ollama）
@@ -115,7 +127,7 @@ rag:
 > `DocumentByCharacterSplitter` / `DocumentSplitters.recursive` 都会忽略 overlap 参数（相邻分块重叠恒为 0），
 > 所以没有直接使用其内置分块器。
 
-## 八、构建与测试
+## 九、构建与测试
 
 ```bash
 # 后端：编译 + 单元测试（16 个用例）
@@ -136,7 +148,7 @@ cd frontend && npm ci && npm run build
 
 CI（`.github/workflows/ci.yml`）在每次 push / PR 时执行后端 `mvn -B test` 与前端 `npm run build`。
 
-## 九、常用命令
+## 十、常用命令
 
 ```bash
 docker compose up -d                    # 启动全部
@@ -148,7 +160,7 @@ docker compose down -v                  # 清理数据（危险，会删除所�
 docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d   # 生产配置（SSL + 资源限制）
 ```
 
-## 十、访问地址
+## 十一、访问地址
 
 | 服务 | 地址 | 说明 |
 |------|------|------|
@@ -157,14 +169,14 @@ docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d   # 生产
 | MinIO 控制台 | http://localhost:9001 | 文件管理，账号见 `.env` |
 | Qdrant 面板 | http://localhost:6333/dashboard | 向量数据管理 |
 
-## 十一、安全说明
+## 十二、安全说明
 
 - `.env` 只保存在本机，已在 `.gitignore` 中忽略；仓库里只提供 `.env.example` 模板。
 - 所有密码/密钥请使用随机值：`openssl rand -base64 32`（JWT 用 `-base64 64`）。
 - 如果密钥曾经进过版本库，请立即在服务端轮换（吊销重建），删文件不足以补救。
 - 生产部署建议通过 `docker-compose.prod.yml` 挂载 `./certs` 开启 HTTPS，并对公网只暴露 80/443。
 
-## 十二、项目结构
+## 十三、项目结构
 
 ```
 rag-assistant/
@@ -191,7 +203,7 @@ rag-assistant/
 └── README.md
 ```
 
-## 十三、从旧版本升级
+## 十四、从旧版本升级
 
 1. 旧版本使用 384 维向量，需先删除旧集合再重新上传文档：
    `curl -X DELETE http://localhost:6333/collections/rag_knowledge`
