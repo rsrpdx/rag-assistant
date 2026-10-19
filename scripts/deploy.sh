@@ -74,7 +74,7 @@ MYSQL_PASSWORD=$(openssl rand -base64 32)
 REDIS_PASSWORD=$(openssl rand -base64 32)
 MINIO_ROOT_USER=ragadmin
 MINIO_ROOT_PASSWORD=$(openssl rand -base64 32)
-JWT_SECRET=$(openssl rand -base64 64)
+JWT_SECRET=$(openssl rand -base64 64 | tr -d '\n')
 HTTP_PORT=${HTTP_PORT}
 EOF
   chmod 600 .env
