@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 #
-# RAG Assistant 一键部署脚本（Ubuntu / Debian）
+# RAG Assistant 一键部署脚本（Ubuntu / Debian / RHEL 系）
 #
 # 用法：
 #   sudo bash scripts/deploy.sh
@@ -24,11 +24,16 @@ warn() { printf '\033[33m[deploy]\033[0m %s\n' "$*"; }
 die()  { printf '\033[31m[deploy]\033[0m %s\n' "$*" >&2; exit 1; }
 
 [ "$(id -u)" -eq 0 ] || die "请用 root 或 sudo 执行"
-command -v apt-get >/dev/null 2>&1 || die "目前只支持 Ubuntu / Debian"
 
 log "安装基础依赖"
-apt-get update -qq
-DEBIAN_FRONTEND=noninteractive apt-get install -y -qq git curl openssl ca-certificates
+if command -v apt-get >/dev/null 2>&1; then
+  apt-get update -qq
+  DEBIAN_FRONTEND=noninteractive apt-get install -y -qq git curl openssl ca-certificates
+elif command -v dnf >/dev/null 2>&1; then
+  dnf install -y git curl openssl ca-certificates
+else
+  die "不支持的发行版：需要 apt-get 或 dnf"
+fi
 
 if ! command -v docker >/dev/null 2>&1; then
   log "安装 Docker Engine（官方脚本）"
@@ -82,7 +87,7 @@ if ! grep -q '^LLM_API_KEY=..*' .env; then
 fi
 
 log "构建并启动六个服务（首次约 5~10 分钟，取决于服务器网络）"
-docker compose up -d --build
+COMPOSE_PARALLEL_LIMIT=1 docker compose up -d --build
 
 log "等待服务就绪"
 ok=0

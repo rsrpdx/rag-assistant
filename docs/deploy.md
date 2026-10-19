@@ -7,7 +7,7 @@
 
 | 项目 | 建议 |
 |------|------|
-| 服务器 | Ubuntu 22.04 / 24.04，**2 核 4G 起**（2G 也能跑，脚本会自动加 2G swap，但首次构建偏慢） |
+| 服务器 | Ubuntu 22.04 / 24.04、Debian 或 Alibaba Cloud Linux / CentOS 等 RHEL 系；**2 核 4G 起**（2G 也能跑，脚本会自动加 2G swap，但首次构建偏慢） |
 | 磁盘 | 20G 以上（镜像约 2G + 数据） |
 | 安全组 | 放行 22、80（配 HTTPS 再放行 443） |
 | LLM | 一个 DeepSeek（或其他 OpenAI 兼容接口）的 API Key |
