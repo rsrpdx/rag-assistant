@@ -1,0 +1,87 @@
+﻿spring:
+  application:
+    name: rag-assistant
+  profiles:
+    active: dev
+  datasource:
+    url: jdbc:mysql://localhost:3306/rag_assistant?useUnicode=true&characterEncoding=utf-8&serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=true&useSSL=false
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    username: root
+    password: ${MYSQL_PASSWORD}
+    hikari:
+      maximum-pool-size: 20
+      minimum-idle: 5
+      idle-timeout: 30000
+      connection-timeout: 30000
+  data:
+    redis:
+      host: localhost
+      port: 6379
+      # 本地 Redis 未设置密码；生产环境密码见 application-prod.yml
+      timeout: 3000
+      lettuce:
+        pool:
+          max-active: 16
+          max-idle: 8
+          min-idle: 4
+  servlet:
+    multipart:
+      max-file-size: 50MB
+      max-request-size: 60MB
+  sql:
+    init:
+      mode: never
+
+server:
+  port: 8081
+
+mybatis-plus:
+  mapper-locations: classpath:mapper/*.xml
+  type-aliases-package: com.rag.assistant.module.**.entity
+  global-config:
+    db-config:
+      id-type: auto
+      logic-delete-field: isDeleted
+      logic-delete-value: 1
+      logic-not-delete-value: 0
+      insert-strategy: not_null
+      update-strategy: not_null
+  configuration:
+    map-underscore-to-camel-case: true
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+
+jwt:
+  secret: ${JWT_SECRET}
+  access-token-expire: 86400000
+  refresh-token-expire: 2592000000
+
+rag:
+  qdrant:
+    host: localhost
+    port: 6334
+    collection: rag_knowledge
+    dimension: 512
+  search:
+    max-results: 5
+    # 依据 EmbeddingQualityTest 实测：正确配对相似度 0.60-0.71，无关配对 0.20-0.46
+    # 真实文档单块 vs 提问最低 0.42，阈值取 0.4 以保证召回
+    min-score: 0.4
+  llm:
+    base-url: ${LLM_BASE_URL:https://api.deepseek.com/v1}
+    api-key: ${LLM_API_KEY}
+    chat-model: ${LLM_CHAT_MODEL:deepseek-chat}
+    temperature: 0.7
+    max-tokens: 2048
+  doc:
+    chunk:
+      max-size: 500
+      overlap: 50
+  minio:
+    endpoint: http://localhost:9000
+    access-key: ${MINIO_ROOT_USER:minioadmin}
+    secret-key: ${MINIO_ROOT_PASSWORD}
+    bucket: rag-files
+
+logging:
+  level:
+    com.rag.assistant: debug

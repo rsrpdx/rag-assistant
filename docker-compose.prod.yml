@@ -1,0 +1,56 @@
+# ===================== Production Overrides =====================
+# Usage: docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d
+#
+# Before starting:
+#   1. Place SSL certs in ./certs/ (fullchain.pem + privkey.pem)
+#   2. Review .env for production secrets
+#   3. Set STRONG random passwords for all services
+
+services:
+  mysql:
+    deploy:
+      resources:
+        limits:
+          memory: 1G
+        reservations:
+          memory: 512M
+
+  redis:
+    deploy:
+      resources:
+        limits:
+          memory: 256M
+
+  qdrant:
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+
+  backend:
+    deploy:
+      resources:
+        limits:
+          memory: 1G
+        reservations:
+          memory: 512M
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "50m"
+        max-file: "3"
+
+  frontend:
+    build:
+      args:
+        NGINX_CONFIG: docker/nginx/nginx-prod.conf
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./certs:/etc/nginx/ssl:ro
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "50m"
+        max-file: "3"

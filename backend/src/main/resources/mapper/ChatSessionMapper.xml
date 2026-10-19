@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.rag.assistant.module.chat.mapper.ChatSessionMapper">
+
+    <resultMap id="BaseResultMap" type="com.rag.assistant.module.chat.model.entity.ChatSession">
+        <id column="id" property="id"/>
+        <result column="title" property="title"/>
+        <result column="user_id" property="userId"/>
+        <result column="kb_id" property="kbId"/>
+        <result column="message_count" property="messageCount"/>
+        <result column="is_deleted" property="isDeleted"/>
+        <result column="created_at" property="createdAt"/>
+        <result column="updated_at" property="updatedAt"/>
+    </resultMap>
+
+    <sql id="BaseColumns">
+        id, title, user_id, kb_id, message_count, is_deleted, created_at, updated_at
+    </sql>
+
+</mapper>

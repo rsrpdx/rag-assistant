@@ -1,0 +1,36 @@
+# 构建上下文（前端 Dockerfile 的 context 是仓库根目录）
+.git/
+.github/
+/docs/
+/.idea/
+/.vscode/
+/.kilo/
+**/node_modules/
+**/dist/
+**/target/
+
+# 根目录下的本地运行数据与二进制，绝不能进镜像
+/storage/
+/minio/
+/snapshots/
+/qdrant/
+/jdk21/
+/.m2/
+/.tmp-verify/
+*.zip
+*.exe
+*.log
+/nul
+
+# 密钥与本机配置
+.env
+.env.local
+.env.production
+/certs/
+/resume-optimized.md
+/高频用户模拟测试报告.md
+/test.md
+/test.doc
+/test.pdf
+/test_upload.md
+/start_backend.bat

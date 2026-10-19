@@ -1,0 +1,57 @@
+# ===================== Environment & Secrets =====================
+.env
+.env.local
+.env.production
+
+# ===================== SSL Certificates =====================
+/certs/
+
+# ===================== Backups =====================
+/backups/
+
+# ===================== Build Output =====================
+backend/target/
+frontend/dist/
+node_modules/
+frontend/node_modules/
+*.tsbuildinfo
+
+# ===================== Local Runtime Data =====================
+# 根目录下的本机运行数据与下载的二进制依赖，部署统一走 docker compose。
+# 必须用前导 / 锚定根目录，否则会误伤 backend/.../thirdparty/minio/ 这类同名源码包。
+/storage/
+/minio/
+/snapshots/
+/qdrant/
+/jdk21/
+/jdk21.zip
+/nodejs.zip
+/.m2/
+/.tmp-verify/
+/.qdrant-initialized
+/nul
+
+# ===================== IDE / Agent =====================
+.vscode/
+.idea/
+*.iml
+/.kilo/
+
+# ===================== OS =====================
+.DS_Store
+Thumbs.db
+
+# ===================== Logs =====================
+*.log
+
+# ===================== Docker =====================
+docker-compose.override.yml
+
+# ===================== 本地个人文件 =====================
+/resume-optimized.md
+/高频用户模拟测试报告.md
+/test.md
+/test.doc
+/test.pdf
+/test_upload.md
+/start_backend.bat

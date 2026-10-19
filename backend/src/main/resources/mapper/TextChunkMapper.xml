@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.rag.assistant.module.rag.mapper.TextChunkMapper">
+
+    <resultMap id="BaseResultMap" type="com.rag.assistant.module.rag.model.TextChunk">
+        <id column="id" property="id"/>
+        <result column="doc_id" property="docId"/>
+        <result column="kb_id" property="kbId"/>
+        <result column="content" property="content"/>
+        <result column="chunk_index" property="chunkIndex"/>
+        <result column="token_count" property="tokenCount"/>
+        <result column="qdrant_point_id" property="qdrantPointId"/>
+        <result column="is_deleted" property="isDeleted"/>
+        <result column="created_at" property="createdAt"/>
+    </resultMap>
+
+    <sql id="BaseColumns">
+        id, doc_id, kb_id, content, chunk_index, token_count,
+        qdrant_point_id, is_deleted, created_at
+    </sql>
+
+</mapper>
