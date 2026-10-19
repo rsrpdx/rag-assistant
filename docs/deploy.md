@@ -108,5 +108,6 @@ docker volume ls | grep rag-
 | 容器反复重启 / OOM | `dmesg | grep -i oom` 确认；升级到 4G，或给 backend 加 `JAVA_TOOL_OPTIONS=-Xmx512m` |
 | 问答报错或一直无回复 | 检查 `.env` 的 `LLM_API_KEY`；`docker compose logs -f backend` 看具体报错 |
 | 上传大文件 413 | Nginx 的 `client_max_body_size 60M` 与 Spring 的 `max-file-size 50MB` 需同时调整 |
+| 80 端口被占用 | 检查 `ss -ltnp 'sport = :80'`；若被 1Panel OpenResty 默认站占用，可停止该容器或在 `.env` 改 `HTTP_PORT=8088` |
 | 检索不到内容 | 确认知识库里有文档且状态为解析完成；Qdrant 维度必须是 512，换过模型需删集合重传 |
 | 80 端口被占用 | 在 `.env` 里改 `HTTP_PORT=8088`，重新 `docker compose up -d` |

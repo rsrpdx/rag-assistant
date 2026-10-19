@@ -5,6 +5,8 @@
 基于 **Spring Boot 3 + LangChain4j + Qdrant** 的检索增强生成（RAG）问答平台：
 文档上传 → 解析 → 分块 → 本地向量化 → 语义检索 → LLM 生成，回答经 SSE 流式输出。
 
+线上环境：<http://43.108.121.102>
+
 ---
 
 ## 一、技术栈
@@ -49,7 +51,7 @@ docker compose logs -f
 
 ## 四、部署到云服务器
 
-一台 2C4G 的 Ubuntu 服务器即可。脚本会安装 Docker、生成随机密码、拉起六个服务并轮询健康检查：
+一台 2C4G 的 Linux 服务器即可（Ubuntu / Debian / Alibaba Cloud Linux 等）。脚本会安装 Docker、生成随机密码、拉起六个服务并轮询健康检查：
 
 ```bash
 git clone https://github.com/rsrpdx/rag-assistant.git /opt/rag-assistant
@@ -94,7 +96,7 @@ cd frontend && npm install && npm run dev
 |------|--------|------------|
 | MySQL | mysql-data | /var/lib/mysql |
 | Redis | redis-data | /data |
-| MinIO | minio-data | /data |
+| MinIO | minio-data | /bitnami/minio/data |
 | Qdrant | qdrant-data | /qdrant/storage |
 
 ## 八、LLM 配置
