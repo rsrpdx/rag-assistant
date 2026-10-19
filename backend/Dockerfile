@@ -10,13 +10,11 @@ COPY src ./src
 RUN mvn package -DskipTests -B
 
 # ===================== Run Stage =====================
-FROM eclipse-temurin:21-jre-alpine
+FROM eclipse-temurin:21-jre-jammy
 
 WORKDIR /app
 
-RUN apk add --no-cache tzdata libstdc++ libgomp && \
-    cp /usr/share/zoneinfo/Asia/Shanghai /etc/localtime && \
-    echo "Asia/Shanghai" > /etc/timezone
+ENV TZ=Asia/Shanghai
 
 COPY --from=builder /build/target/*.jar app.jar
 
