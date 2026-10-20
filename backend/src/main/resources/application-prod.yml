@@ -38,6 +38,8 @@ mybatis-plus:
       logic-not-delete-value: 0
   configuration:
     map-underscore-to-camel-case: true
+    # 生产环境不把每条 SQL 打到标准输出，避免日志膨胀与 I/O 开销
+    log-impl: org.apache.ibatis.logging.slf4j.Slf4jImpl
 
 jwt:
   secret: ${JWT_SECRET}
