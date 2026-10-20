@@ -18,6 +18,7 @@ set -euo pipefail
 APP_DIR="${APP_DIR:-/opt/rag-assistant}"
 REPO_URL="${REPO_URL:-https://github.com/rsrpdx/rag-assistant.git}"
 HTTP_PORT="${HTTP_PORT:-80}"
+HTTPS_PORT="${HTTPS_PORT:-443}"
 
 log()  { printf '\033[32m[deploy]\033[0m %s\n' "$*"; }
 warn() { printf '\033[33m[deploy]\033[0m %s\n' "$*"; }
@@ -87,16 +88,32 @@ if ! grep -q '^LLM_API_KEY=..*' .env; then
 fi
 
 log "构建并启动六个服务（首次约 5~10 分钟，取决于服务器网络）"
-COMPOSE_PARALLEL_LIMIT=1 docker compose up -d --build
+
+COMPOSE_FILES=(-f docker-compose.yml)
+if [ -f certs/fullchain.pem ] && [ -f certs/privkey.pem ]; then
+  COMPOSE_FILES+=(-f docker-compose.prod.yml)
+  log "检测到 HTTPS 证书，使用生产编排"
+  HEALTH_URL="https://127.0.0.1:${HTTPS_PORT}/health"
+  CURL_FLAGS=(-fsSk)
+else
+  HEALTH_URL="http://127.0.0.1:${HTTP_PORT}/health"
+  CURL_FLAGS=(-fsS)
+fi
+
+COMPOSE_PARALLEL_LIMIT=1 docker compose "${COMPOSE_FILES[@]}" up -d --build
 
 log "等待服务就绪"
 ok=0
 for _ in $(seq 1 90); do
-  if curl -fsS "http://127.0.0.1:${HTTP_PORT}/health" >/dev/null 2>&1; then ok=1; break; fi
+  if curl "${CURL_FLAGS[@]}" "${HEALTH_URL}" >/dev/null 2>&1; then ok=1; break; fi
   sleep 5
 done
 [ "$ok" -eq 1 ] || die "健康检查未通过：cd ${APP_DIR} && docker compose logs -f backend"
 
 ip=$(curl -fsS -m 5 https://api.ipify.org 2>/dev/null || echo "<服务器公网IP>")
-log "部署完成：http://${ip}:${HTTP_PORT}"
-docker compose ps
+if [ -f certs/fullchain.pem ] && [ -f certs/privkey.pem ]; then
+  log "部署完成：https://${ip}"
+else
+  log "部署完成：http://${ip}:${HTTP_PORT}"
+fi
+docker compose "${COMPOSE_FILES[@]}" ps
