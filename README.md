@@ -5,7 +5,7 @@
 基于 **Spring Boot 3 + LangChain4j + Qdrant** 的检索增强生成（RAG）问答平台：
 文档上传 → 解析 → 分块 → 本地向量化 → 语义检索 → LLM 生成，回答经 SSE 流式输出。
 
-线上环境：<http://43.108.121.102>
+线上环境：<http://fearless.website>（IP：`43.108.121.102`）
 
 ---
 
