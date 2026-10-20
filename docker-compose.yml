@@ -138,5 +138,7 @@ services:
     ports:
       # 唯一对外端口：页面与 /api 反向代理都走这里
       - "${HTTP_PORT:-80}:80"
+    volumes:
+      - ./certbot-webroot:/var/www/certbot:ro
     depends_on:
       - backend

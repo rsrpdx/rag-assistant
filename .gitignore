@@ -5,6 +5,7 @@
 
 # ===================== SSL Certificates =====================
 /certs/
+/certbot-webroot/
 
 # ===================== Backups =====================
 /backups/
