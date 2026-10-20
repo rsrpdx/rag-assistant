@@ -117,6 +117,7 @@ services:
       LLM_CHAT_MODEL: ${LLM_CHAT_MODEL:-deepseek-chat}
       MINIO_ROOT_USER: ${MINIO_ROOT_USER:-minioadmin}
       MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD}
+      JAVA_TOOL_OPTIONS: "-Xms256m -Xmx640m -XX:MaxMetaspaceSize=192m -XX:MaxDirectMemorySize=64m -XX:+UseSerialGC -XX:ActiveProcessorCount=2"
     depends_on:
       mysql:
         condition: service_healthy
