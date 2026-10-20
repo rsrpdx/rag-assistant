@@ -50,10 +50,10 @@ docker compose logs -f backend            # 看后端启动与 LLM 调用日志
 
 | 端口 | 暴露范围 | 用途 |
 |------|----------|------|
-| 80 | 公网 | 前端页面 + `/api` 反向代理 |
+| 80 / 443 | 公网 | HTTP 自动跳转 HTTPS；前端页面 + `/api` 反向代理 |
 | 8080 / 3306 / 6379 / 9000 / 6333 / 6334 | 仅 127.0.0.1 | 内部服务与调试 |
 
-默认只把前端 80 端口暴露出去，数据库、Redis、MinIO、Qdrant 都绑定在 127.0.0.1，公网访问不到。
+默认只把前端 80/443 端口暴露出去，数据库、Redis、MinIO、Qdrant 都绑定在 127.0.0.1，公网访问不到。
 需要看 MinIO / Qdrant 控制台时用 SSH 隧道：
 
 ```bash
@@ -66,26 +66,39 @@ ssh -L 9001:127.0.0.1:9001 -L 6333:127.0.0.1:6333 root@<服务器IP>
 **方式 A（最省事）**：域名解析到服务器 → Cloudflare 开启代理（橙云）→ SSL/TLS 模式选 `Full`，
 源站继续只开 80，证书由 Cloudflare 提供。
 
-**方式 B（自签证书）**：用 certbot 申请证书，把 `fullchain.pem` / `privkey.pem` 放到 `./certs`，
-再把 `docker/nginx/nginx-prod.conf` 里的 `server_name localhost` 改成你的域名，然后用生产编排启动：
+**方式 B（Let's Encrypt，推荐）**：使用 `acme.sh` 通过 HTTP-01 验证申请证书，
+证书保存到 `./certs/fullchain.pem` 和 `./certs/privkey.pem`，并由 cron 自动续期：
 
 ```bash
+# 1. 申请证书（首次）
+~/.acme.sh/acme.sh --issue -d fearless.website -d www.fearless.website \
+  -w /opt/rag-assistant/certbot-webroot --server letsencrypt
+
+# 2. 安装证书，续期后自动重启前端
+~/.acme.sh/acme.sh --install-cert -d fearless.website \
+  --key-file /opt/rag-assistant/certs/privkey.pem \
+  --fullchain-file /opt/rag-assistant/certs/fullchain.pem \
+  --reloadcmd 'cd /opt/rag-assistant && docker compose -f docker-compose.yml -f docker-compose.prod.yml restart frontend'
+
+# 3. 切换到生产编排（同时监听 80/443）
 docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d --build
 ```
+
+阿里云安全组需要额外放行 TCP `443`。`acme.sh` 会安装定时任务，每天检查并在证书到期前自动续期。
 
 ## 5. 更新与回滚
 
 ```bash
 cd /opt/rag-assistant
 git pull
-docker compose up -d --build
+bash scripts/deploy.sh
 ```
 
 回滚到某个提交：
 
 ```bash
 git checkout <commit-id>
-docker compose up -d --build
+bash scripts/deploy.sh
 ```
 
 ## 6. 备份
