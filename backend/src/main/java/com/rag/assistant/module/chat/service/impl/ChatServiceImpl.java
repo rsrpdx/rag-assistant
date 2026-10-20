@@ -107,7 +107,7 @@ public class ChatServiceImpl implements ChatService {
             return toMessageVO(sessionId, answer, sourceJson);
         } catch (Exception e) {
             log.error("Chat processing error", e);
-            String errorMsg = e.getMessage();
+            String errorMsg = "AI \u670d\u52a1\u6682\u65f6\u4e0d\u53ef\u7528\uff0c\u8bf7\u7a0d\u540e\u91cd\u8bd5\u3002";
             saveMessage(sessionId, "AI", errorMsg, null, 0);
             return toMessageVO(sessionId, errorMsg, null);
         }
@@ -186,7 +186,7 @@ public class ChatServiceImpl implements ChatService {
                         public void onError(Throwable error) {
                             log.error("LLM stream error", error);
                             try {
-                                emitter.send(SseEmitter.event().name("error").data(error.getMessage()));
+                                emitter.send(SseEmitter.event().name("error").data("AI \u670d\u52a1\u6682\u65f6\u4e0d\u53ef\u7528\uff0c\u8bf7\u7a0d\u540e\u91cd\u8bd5\u3002"));
                             } catch (IOException ignored) {}
                             emitter.completeWithError(error);
                             streamDone.completeExceptionally(error);
@@ -197,7 +197,7 @@ public class ChatServiceImpl implements ChatService {
             } catch (Exception e) {
                 log.error("Chat streaming error", e);
                 try {
-                    emitter.send(SseEmitter.event().name("error").data(e.getMessage()));
+                    emitter.send(SseEmitter.event().name("error").data("AI \u670d\u52a1\u6682\u65f6\u4e0d\u53ef\u7528\uff0c\u8bf7\u7a0d\u540e\u91cd\u8bd5\u3002"));
                 } catch (IOException ignored) {}
                 emitter.completeWithError(e);
             }

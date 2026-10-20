@@ -90,6 +90,7 @@ public class MinioService {
                     .build();
             return publicMinioClient.getPresignedObjectUrl(args);
         } catch (Exception e) {
+            log.warn("MinIO presign failed for {}, falling back to plain URL: {}", objectName, e.getMessage());
             String base = minioConfig.getPublicEndpoint();
             if (base == null || base.isBlank()) {
                 base = minioConfig.getEndpoint();
