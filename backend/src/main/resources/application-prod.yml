@@ -66,6 +66,7 @@ rag:
       overlap: 50
   minio:
     endpoint: http://minio:9000
+    public-endpoint: ${MINIO_PUBLIC_ENDPOINT:https://fearless.website}
     access-key: ${MINIO_ROOT_USER:minioadmin}
     secret-key: ${MINIO_ROOT_PASSWORD}
     bucket: rag-files

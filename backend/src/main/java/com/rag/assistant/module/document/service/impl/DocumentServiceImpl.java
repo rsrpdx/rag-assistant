@@ -232,7 +232,7 @@ public class DocumentServiceImpl extends ServiceImpl<DocumentMapper, Document> i
         vo.setOriginalName(document.getOriginalName());
         vo.setFileSize(document.getFileSize());
         vo.setFileType(document.getFileType());
-        vo.setFileUrl(document.getFileUrl());
+        vo.setFileUrl(minioService.getFileUrl(document.getFilename()));
         vo.setStatus(document.getStatus());
         vo.setChunkCount(document.getChunkCount());
         vo.setErrorMsg(document.getErrorMsg());

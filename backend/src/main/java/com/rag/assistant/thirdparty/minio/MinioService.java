@@ -3,8 +3,8 @@ package com.rag.assistant.thirdparty.minio;
 import cn.hutool.core.util.IdUtil;
 import io.minio.*;
 import io.minio.http.Method;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -13,11 +13,19 @@ import java.util.concurrent.TimeUnit;
 
 @Slf4j
 @Service
-@RequiredArgsConstructor
 public class MinioService {
 
     private final MinioClient minioClient;
+    private final MinioClient publicMinioClient;
     private final MinioConfig minioConfig;
+
+    public MinioService(MinioClient minioClient,
+                        @Qualifier("publicMinioClient") MinioClient publicMinioClient,
+                        MinioConfig minioConfig) {
+        this.minioClient = minioClient;
+        this.publicMinioClient = publicMinioClient;
+        this.minioConfig = minioConfig;
+    }
 
     public String upload(MultipartFile file, String originalName) {
         try {
@@ -80,9 +88,13 @@ public class MinioService {
                     .method(Method.GET)
                     .expiry(7, TimeUnit.DAYS)
                     .build();
-            return minioClient.getPresignedObjectUrl(args);
+            return publicMinioClient.getPresignedObjectUrl(args);
         } catch (Exception e) {
-            return minioConfig.getEndpoint() + "/" + minioConfig.getBucket() + "/" + objectName;
+            String base = minioConfig.getPublicEndpoint();
+            if (base == null || base.isBlank()) {
+                base = minioConfig.getEndpoint();
+            }
+            return base.replaceAll("/+$", "") + "/" + minioConfig.getBucket() + "/" + objectName;
         }
     }
 
